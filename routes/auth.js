@@ -20,7 +20,7 @@ router.post("/register", async (req, res) => {
 
         const exists = await User.findOne({ email });
         if (exists) {
-            return res.status(400).json({ message: "Email already exists" });
+            return res.status(400).json({ message: "Email orqali ro'yxatdan o'tilgan" });
         }
 
         const hashed = await bcrypt.hash(password, 10);
