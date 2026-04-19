@@ -30,10 +30,10 @@ router.post("/register", async (req, res) => {
             password: hashed
         });
 
-        res.json({ message: "User created" });
+        res.json({ message: "Foydalanuvchi muvaffaqiyatli yaratildi" });
 
     } catch (err) {
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "Serverda xatolik yuz berdi" });
     }
 });
 
@@ -47,12 +47,12 @@ router.post("/login", async (req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ message: "User not found" });
+            return res.status(400).json({ message: "Foydalanuvchi topilmadi" });
         }
 
         // lock check
         if (user.isLocked && user.lockUntil > Date.now()) {
-            return res.status(403).json({ message: "Account locked. Try later." });
+            return res.status(403).json({ message: "Akkaunt bloklangan. Keyinroq urinib ko'ring." });
         }
 
         if (user.isLocked && user.lockUntil <= Date.now()) {
@@ -71,7 +71,7 @@ router.post("/login", async (req, res) => {
             }
 
             await user.save();
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(400).json({ message: "Login yoki parol xato" });
         }
 
         user.failedAttempts = 0;
@@ -95,7 +95,7 @@ router.post("/login", async (req, res) => {
         res.json({ requires2FA: true });
 
     } catch (err) {
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "Serverda xatolik yuz berdi" });
     }
 });
 
@@ -114,13 +114,13 @@ router.post("/verify", async (req, res) => {
         }
 
         if (user.otpExpires < Date.now()) {
-            return res.status(400).json({ message: "OTP expired" });
+            return res.status(400).json({ message: "OTP kod eskirgan" });
         }
 
         const valid = await bcrypt.compare(code, user.otp);
 
         if (!valid) {
-            return res.status(400).json({ message: "Invalid OTP" });
+            return res.status(400).json({ message: "OTP kod xato" });
         }
 
         const token = jwt.sign(
@@ -137,7 +137,7 @@ router.post("/verify", async (req, res) => {
         res.json({ token });
 
     } catch (err) {
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "Serverda xatolik yuz berdi" });
     }
 });
 
@@ -151,7 +151,7 @@ router.post("/forgot-password", async (req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ message: "User not found" });
+            return res.status(400).json({ message: "Foydalanuvchi topilmadi" });
         }
 
         const otp = generateOTP();
@@ -169,10 +169,10 @@ router.post("/forgot-password", async (req, res) => {
             text: `Your reset OTP is: ${otp}`
         });
 
-        res.json({ message: "OTP sent" });
+        res.json({ message: "OTP kod yuborildi" });
 
     } catch (err) {
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "Serverda xatolik yuz berdi" });
     }
 });
 
@@ -191,19 +191,19 @@ router.post("/verify-reset-otp", async (req, res) => {
         }
 
         if (user.otpExpires < Date.now()) {
-            return res.status(400).json({ message: "OTP expired" });
+            return res.status(400).json({ message: "OTP kod eskirgan" });
         }
 
         const valid = await bcrypt.compare(code, user.otp);
 
         if (!valid) {
-            return res.status(400).json({ message: "Invalid OTP" });
+            return res.status(400).json({ message: "OTP kod xato" });
         }
 
-        res.json({ message: "OTP verified" });
+        res.json({ message: "OTP kod tasdiqlandi" });
 
     } catch (err) {
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "Serverda xatolik yuz berdi" });
     }
 });
 
@@ -218,7 +218,7 @@ router.post("/reset-password", async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(400).json({ message: "User not found" });
+            return res.status(400).json({ message: "Foydalanuvchi topilmadi" });
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -234,7 +234,7 @@ router.post("/reset-password", async (req, res) => {
         res.json({ message: "Password updated" });
 
     } catch (err) {
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "Serverda xatolik yuz berdi" });
     }
 });
 
