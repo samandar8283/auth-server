@@ -1,15 +1,25 @@
+import sgMail from "@sendgrid/mail";
 import dotenv from "dotenv";
-import nodemailer from "nodemailer";
+
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD
-    }
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-export default transporter;
+export const sendEmail = async ({ to, subject, text }) => {
+    try {
+        const msg = {
+            to,
+            from: process.env.EMAIL_FROM,
+            subject,
+            text,
+        };
+
+        const result = await sgMail.send(msg);
+        console.log("EMAIL SENT:", result[0].statusCode);
+
+        return result;
+    } catch (err) {
+        console.log("SENDGRID ERROR:", err.response?.body || err);
+        throw err;
+    }
+};

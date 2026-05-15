@@ -2,7 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-import transporter from "../utils/sendEmail.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 const router = express.Router();
 
@@ -85,8 +85,7 @@ router.post("/login", async (req, res) => {
 
         await user.save();
 
-        await transporter.sendMail({
-            from: process.env.EMAIL,
+        await sendEmail({
             to: user.email,
             subject: "Your OTP Code",
             text: `Your OTP is: ${otp}`
@@ -163,8 +162,7 @@ router.post("/forgot-password", async (req, res) => {
 
         await user.save();
 
-        await transporter.sendMail({
-            from: process.env.EMAIL,
+        await sendEmail({
             to: user.email,
             subject: "Password Reset OTP",
             text: `Your reset OTP is: ${otp}`
