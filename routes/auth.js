@@ -96,6 +96,7 @@ router.post("/login", async (req, res) => {
 
     } catch (err) {
         res.status(500).json({ message: "Serverda xatolik yuz berdi" });
+        console.log(err);
     }
 });
 
@@ -173,6 +174,7 @@ router.post("/forgot-password", async (req, res) => {
 
     } catch (err) {
         res.status(500).json({ message: "Serverda xatolik yuz berdi" });
+        console.log(err);
     }
 });
 
